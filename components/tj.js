@@ -1,5 +1,5 @@
-const axios = require('axios');
-const api = require('../scripts/api');
+import axios from 'axios';
+import api from '../scripts/api.js';
 
 const getParsedNews = (news, count) => {
     return news.map(({ cover, title, badges, url }) => {
@@ -27,11 +27,9 @@ const getLastNewsFromApi = async (count) => {
     });
 }
 
-const getLastNews = async (countToShow) => {
+export const getLastNews = async (countToShow) => {
     const countToHandle = countToShow*2;
     const newsFromApi = await getLastNewsFromApi(countToHandle);
 
     return getParsedNews(newsFromApi, countToShow);
 }
-
-module.exports.getLastNews = getLastNews;

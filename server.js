@@ -1,11 +1,12 @@
-const TelegramBot = require('node-telegram-bot-api');
-require('dotenv').config();
+import TelegramBot from 'node-telegram-bot-api';
+import dotenv from 'dotenv';
+dotenv.config();
 
-const { getLastNews } = require('./components/tj');
-const { getYesterdayShows } = require('./components/myshows');
+import { getLastNews } from './components/tj.js';
+import { getYesterdayShows } from './components/myshows.js';
 
-const { declOfNum } = require('./scripts/helpers');
-const { GENDERS } = require('./scripts/constants');
+import { declOfNum } from './scripts/helpers.js';
+import { GENDERS } from './scripts/constants.js';
 
 const token = process.env.BOT_TOKEN;
 const chatId = process.env.BOT_CHAT_ID;

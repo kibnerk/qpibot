@@ -1,9 +1,9 @@
-const axios = require('axios');
-const setCookie = require('set-cookie-parser');
-const { isYesterday, format } = require('date-fns');
+import axios from 'axios';
+import setCookie from 'set-cookie-parser';
+import { isYesterday, format } from 'date-fns';
 
-const api = require('../scripts/api');
-const { NAME_BY_LOGIN } = require('../scripts/constants');
+import api from '../scripts/api.js';
+import { NAME_BY_LOGIN } from '../scripts/constants.js';
 
 const getValueFromData = (title, data) => `${title}=` + data.find(({ name }) => name === title).value;
 
@@ -42,7 +42,7 @@ const getShowsWithAuth = async (login, password) => {
     return null;
 };
 
-const getYesterdayShows = async (login, password) => {
+export const getYesterdayShows = async (login, password) => {
     const shows = await getShowsWithAuth(login, password);
 
     if (shows) {
@@ -72,5 +72,3 @@ const getYesterdayShows = async (login, password) => {
 
     return null
 }
-
-module.exports.getYesterdayShows = getYesterdayShows;

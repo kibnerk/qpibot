@@ -3,4 +3,4 @@ const api = {
     myshows: 'http://api.myshows.me/profile',
 };
 
-module.exports = api;
+export default api;
