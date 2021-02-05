@@ -1,7 +1,11 @@
 const axios = require('axios');
 const setCookie = require('set-cookie-parser');
+const { isYesterday, format } = require('date-fns');
+
 const api = require('../scripts/api');
 const { NAME_BY_LOGIN } = require('../scripts/constants');
+
+const getValueFromData = (title, data) => `${title}=` + data.find(({ name }) => name === title).value;
 
 const getAuthData = (login, password) => {
    return axios.get(`${api.myshows}/login`, {
@@ -20,19 +24,16 @@ const getAuthData = (login, password) => {
 };
 
 const getLastShows = async authData => {
-    let episodes;
-    const getValue = title => `${title}=` + authData.find(({ name }) => name === title).value;
-    await axios.get(`${api.myshows}/news/`, {
+    return axios.get(`${api.myshows}/news/`, {
         headers: {
-            Cookie: `${getValue('PHPSESSID')}`
+            Cookie: `${getValueFromData('PHPSESSID', authData)}`
         },
     }).then(res => {
-        episodes = res.data;
+        return res.data;
     }).catch(e => {
-        console.error(e)
+        console.error(e);
+        return null;
     })
-
-    return episodes;
 };
 
 const getShowsWithAuth = async (login, password) => {
@@ -46,25 +47,30 @@ const getYesterdayShows = async (login, password) => {
 
     if (shows) {
         const days = Object.keys(shows);
-        const lastWatchDay = days.length && days[0];
-        const last = lastWatchDay && shows[lastWatchDay];
-        let lastOnce = [];
+        const lastWatchDay = days.length && days[1];
 
-        last.forEach(item => {
-            const findItem = lastOnce.find(el => el.login === item.login);
-            if (findItem) {
-                lastOnce = [...lastOnce.filter(el => el.login !== item.login), {
-                    ...findItem,
-                    episodes: item.episodes + findItem.episodes
-                }];
-            } else {
-                lastOnce = [...lastOnce, {...item, name: NAME_BY_LOGIN[item.login] || item.login}];
-            }
-        })
-        return lastOnce;
+        if (!isYesterday(new Date(lastWatchDay))) {
+            const last = lastWatchDay && shows[lastWatchDay];
+            let lastOnce = [];
+
+            last.forEach(item => {
+                const findItem = lastOnce.find(el => el.login === item.login && el.showId === item.showId);
+                if (findItem) {
+                    lastOnce = [...lastOnce.filter(el => el.login !== item.login && el.showId !== item.showId), {
+                        ...findItem,
+                        episodes: item.episodes + findItem.episodes
+                    }];
+                } else {
+                    lastOnce = [...lastOnce, {...item, name: NAME_BY_LOGIN[item.login] || item.login}];
+                }
+            })
+            return lastOnce;
+        }
+
+        return [];
     }
 
     return null
 }
 
-module.exports = getYesterdayShows;
+module.exports.getYesterdayShows = getYesterdayShows;

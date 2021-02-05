@@ -1,8 +1,11 @@
 const TelegramBot = require('node-telegram-bot-api');
 require('dotenv').config();
 
-const getLastNews = require('./components/tj');
-const getYesterdayShows = require('./components/myshows');
+const { getLastNews } = require('./components/tj');
+const { getYesterdayShows } = require('./components/myshows');
+
+const { declOfNum } = require('./scripts/helpers');
+const { GENDERS } = require('./scripts/constants');
 
 const token = process.env.BOT_TOKEN;
 const chatId = process.env.BOT_CHAT_ID;
@@ -19,25 +22,22 @@ bot.on('message', async (msg) => {
     let news = [];
     let shows = [];
 
-    const getSuccess = lastNews => {
+    await getLastNews(3).then(lastNews => {
         news = lastNews;
-    };
+    });
 
-    const getSuccessShows = lastShows => {
+    await getYesterdayShows(myshowsLogin, myshowsPassword).then(lastShows => {
         shows = lastShows;
-    };
-
-    await getLastNews().then(getSuccess);
-    await getYesterdayShows(myshowsLogin, myshowsPassword).then(getSuccessShows);
+    });
 
     let message = `<b>Доброй ночки, ребята! Вот и итоги дня:</b> \n\n<b>Сериалы:</b>\n`;
 
     if (shows.length) {
-        shows.forEach(({ showId, show, name, episodes }, index) => {
-            message += `<b>${index+1}.</b> ${name} посмотрел ${episodes} эпизодов сериала <a href="https://myshows.me/view/${showId}">${show}</a>\n`
+        shows.forEach(({ showId, show, name, episodes, gender}, index) => {
+            message += `${name} ${gender === GENDERS.FEMALE ? 'посмотрела' : 'посмотрел'} ${episodes} ${declOfNum(episodes, ['эпизод', 'эпизода', 'эпизодов'])} сериала <a href="https://myshows.me/view/${showId}">${show}</a>\n`
         });
     } else {
-        message += 'Сериалы сегодня никто не смотрел\n\n'
+        message += 'Сериалы сегодня никто не смотрел\n'
     }
 
     message += `\n<b>Топ новостей c TJ:\n</b>`;

@@ -1,7 +1,7 @@
 const axios = require('axios');
 const api = require('../scripts/api');
 
-const getNewsData = (news, count) => {
+const getParsedNews = (news, count) => {
     return news.map(({ cover, title, badges, url }) => {
         return {
             image: cover ? cover.thumbnailUrl : '',
@@ -12,21 +12,26 @@ const getNewsData = (news, count) => {
     }).filter(({ title }, index) => title && index < count);
 };
 
-const getLastNews = async () => {
-    let news = [];
-    await axios.get(`${api.lastNews}`, {
+const getLastNewsFromApi = async (count) => {
+    return axios.get(`${api.lastNews}`, {
         params: {
-            count: 15,
+            count,
         }
     })
     .then((res) => {
-        news = getNewsData(res.data.result, 3);
+        return res.data.result;
     })
     .catch(e => {
         console.error(e);
+        return [];
     });
-
-    return news;
 }
 
-module.exports = getLastNews;
+const getLastNews = async (countToShow) => {
+    const countToHandle = countToShow*2;
+    const newsFromApi = await getLastNewsFromApi(countToHandle);
+
+    return getParsedNews(newsFromApi, countToShow);
+}
+
+module.exports.getLastNews = getLastNews;
