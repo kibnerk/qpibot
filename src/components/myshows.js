@@ -49,7 +49,7 @@ export const getYesterdayShows = async (login, password) => {
         const days = Object.keys(shows);
         const lastWatchDay = days.length && days[1];
 
-        if (!isYesterday(new Date(lastWatchDay))) {
+        if (isYesterday(new Date(lastWatchDay))) {
             const last = lastWatchDay && shows[lastWatchDay];
             let lastOnce = [];
 
