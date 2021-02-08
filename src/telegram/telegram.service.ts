@@ -14,7 +14,7 @@ export class TelegramService {
     this.bot.launch();
   }
 
-  public listenMessages(message): void {
-    this.bot.command('news', (ctx) => ctx.reply(message));
+  public listenMessages(message: string): void {
+    this.bot.command('news', (ctx) => ctx.replyWithHTML(message));
   }
 }

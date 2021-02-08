@@ -17,12 +17,30 @@ export class AppModule {
 
   onModuleInit() {
     this.telegramService.launch();
-    const shows = this.myshowsService.getYesterdayShows();
-    const showsText = this.myshowsService.getShowsTextList(shows);
+    let shows = [];
 
-    const news = this.tjService.getNews();
-    const newsText = this.tjService.getNewsTextList(news);
+    const myshowsLogin = process.env.MYSHOWS_LOGIN;
+    const myshowsPassword = process.env.MYSHOWS_PASSWORD;
 
-    this.telegramService.listenMessages(`${showsText}\n ${newsText}`);
+    (async () => {
+      await this.myshowsService
+        .getYesterdayShows(myshowsLogin, myshowsPassword)
+        .then((lastShows) => {
+          shows = lastShows;
+        });
+
+      const showsText = this.myshowsService.getShowsTextList(shows);
+
+      const news = await this.tjService.getLastNewsFromApi(15);
+      const newsParsed = this.tjService.getParsedNews(news, 3);
+      const newsText = this.tjService.getNewsTextList(newsParsed);
+      const titleMessage = 'Доброй ночи, друзья! Подоспели итоги дня:';
+
+      this.telegramService.listenMessages(
+        `<b>${titleMessage}</b>\n\n${
+          showsText || 'Сериалы сегодня никто не смотрел'
+        }\n\n ${newsText}`,
+      );
+    })();
   }
 }
