@@ -1,6 +1,6 @@
 FROM node:14
 WORKDIR /usr/src/app
-COPY package.json yarn.lock ./
+COPY . ./
 
 RUN yarn install
 RUN yarn build
