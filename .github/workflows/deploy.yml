@@ -25,7 +25,7 @@ jobs:
       - name: run docker file
         uses: garygrossgarten/github-action-ssh@release
         with:
-          command: cd /var/www/kibnerk.ru/node/qpibot & docker pull kibnerk/qpibot & docker run --env-file .env -p 49164:3000 kibnerk/qpibot
+          command: cd /var/www/kibnerk.ru/node/qpibot & sudo docker pull kibnerk/qpibot & sudo docker run --env-file .env -p 49164:3000 kibnerk/qpibot
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USERNAME }}
           privateKey: ${{ secrets.PRIVATE_KEY }}
