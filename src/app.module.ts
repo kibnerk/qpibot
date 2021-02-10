@@ -34,7 +34,7 @@ export class AppModule {
       const news = await this.tjService.getLastNewsFromApi(15);
       const newsParsed = this.tjService.getParsedNews(news, 3);
       const newsText = this.tjService.getNewsTextList(newsParsed);
-      const titleMessage = 'Доброй ночи, друзья! Подоспели итоги дня:';
+      const titleMessage = 'Доброй ночи, друзья! А вот и итоги дня:';
 
       this.telegramService.listenMessages(
         `<b>${titleMessage}</b>\n\n${
