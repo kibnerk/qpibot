@@ -25,7 +25,7 @@ jobs:
       - name: run docker file
         uses: fifsky/ssh-action@master
         with:
-        command: |
+          command: |
             cd /var/www/kibnerk.ru/node/qpibot
             ls
             sudo docker pull kibnerk/qpibot
