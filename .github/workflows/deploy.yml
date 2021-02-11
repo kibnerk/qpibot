@@ -22,3 +22,12 @@ jobs:
         run: docker build . --file Dockerfile --tag kibnerk/qpibot
       - name: Push the Docker Image
         run: docker push kibnerk/qpibot
+      - name: run docker file
+        uses: fifsky/ssh-action@master
+        with:
+          command: |
+            cd /var/www/kibnerk.ru/node/qpibot
+            sudo docker-compose up -d --build
+          host: ${{ secrets.HOST }}
+          user: ${{ secrets.USERNAME }}
+          key: ${{ secrets.PRIVATE_KEY }}
