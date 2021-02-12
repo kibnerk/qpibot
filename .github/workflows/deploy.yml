@@ -16,17 +16,11 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
-      - name: Docker login
-        run: docker login --username "${{ secrets.DOCKER_USERNAME }}" --password "${{ secrets.DOCKER_PASSWORD }}"
-      - name: Build the Docker Image
-        run: docker build . --file Dockerfile --tag kibnerk/qpibot
-      - name: Push the Docker Image
-        run: docker push kibnerk/qpibot
-      - name: run docker file
         uses: fifsky/ssh-action@master
         with:
           command: |
             cd /var/www/kibnerk.ru/node/qpibot
+            git pull
             sudo docker-compose up -d --build
           host: ${{ secrets.HOST }}
           user: ${{ secrets.USERNAME }}
