@@ -1,4 +1,5 @@
 import { Telegraf } from 'telegraf';
+
 import { Injectable } from '@nestjs/common';
 
 @Injectable()
@@ -14,7 +15,7 @@ export class TelegramService {
     this.bot.launch();
   }
 
-  public listenMessages(message: string): void {
-    this.bot.command('news', (ctx) => ctx.replyWithHTML(message));
+  public sendMessage(message: string, chatId: string): void {
+    this.bot.telegram.sendMessage(chatId, message, { parse_mode: 'HTML' });
   }
 }

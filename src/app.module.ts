@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+import { CronJob } from 'cron';
 import { TelegramService } from './telegram/telegram.service';
 import { MyshowsService } from './myshows/myshows.service';
 import { TjService } from './tj/tj.service';
@@ -21,8 +22,9 @@ export class AppModule {
 
     const myshowsLogin = process.env.MYSHOWS_LOGIN;
     const myshowsPassword = process.env.MYSHOWS_PASSWORD;
+    const chatId = process.env.TELEGRAM_CHAT_ID;
 
-    (async () => {
+    const sendNightlyMessage = async () => {
       await this.myshowsService
         .getYesterdayShows(myshowsLogin, myshowsPassword)
         .then((lastShows) => {
@@ -36,11 +38,19 @@ export class AppModule {
       const newsText = this.tjService.getNewsTextList(newsParsed);
       const titleMessage = 'Доброй ночи, друзья! А вот и итоги дня:';
 
-      this.telegramService.listenMessages(
+      this.telegramService.sendMessage(
         `<b>${titleMessage}</b>\n\n${
           showsText || 'Сериалы сегодня никто не смотрел'
         }\n\n ${newsText}`,
+        chatId,
       );
-    })();
+    };
+
+    const job = new CronJob(
+      '00 00 01 * * *',
+      sendNightlyMessage,
+      'Europe/Moscow',
+    );
+    job.start();
   }
 }
