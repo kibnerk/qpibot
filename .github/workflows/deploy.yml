@@ -3,19 +3,11 @@ name: QpiBot CI
 on:
   push:
     branches: [action]
-  pull_request:
-    branches: [action]
 
 jobs:
   build:
     runs-on: ubuntu-latest
-
-    strategy:
-      matrix:
-        node-version: [14.x]
-
     steps:
-      - uses: actions/checkout@v2
       - name: update & restart
         uses: fifsky/ssh-action@master
         with:
