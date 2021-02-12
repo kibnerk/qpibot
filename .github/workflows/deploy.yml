@@ -2,7 +2,7 @@ name: QpiBot CI
 
 on:
   push:
-    branches: [action]
+    branches: [master]
 
 jobs:
   build:
@@ -12,7 +12,7 @@ jobs:
         uses: fifsky/ssh-action@master
         with:
           command: |
-            cd /var/www/kibnerk.ru/node/qpibot
+            cd ${{ secrets.SERVER_PATH }}
             git pull
             sudo docker-compose up -d --build
           host: ${{ secrets.HOST }}
