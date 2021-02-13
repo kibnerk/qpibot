@@ -2,19 +2,17 @@ import { Injectable } from '@nestjs/common';
 import axios from 'axios';
 import api from '../scripts/api';
 
-interface NewsItemProps {
+interface NewsItem {
   title: string;
-  cover?: { thumbnailUrl?: string };
   url: string;
 }
 
 @Injectable()
 export class TjService {
-  getParsedNews = (news: NewsItemProps[], count: number) => {
+  getParsedNews = (news: NewsItem[], count: number) => {
     return news
-      .map(({ cover, title, url }) => {
+      .map(({ title, url }) => {
         return {
-          image: cover ? cover.thumbnailUrl : '',
           title,
           url,
         };
@@ -22,7 +20,7 @@ export class TjService {
       .filter(({ title }, index) => title && index <= count);
   };
 
-  getNewsTextList(news: NewsItemProps[]) {
+  getNewsTextList(news: NewsItem[]) {
     const message = news
       .map(
         ({ title, url }, index) =>
