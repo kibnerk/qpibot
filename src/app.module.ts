@@ -39,15 +39,15 @@ export class AppModule {
       const titleMessage = 'Доброй ночи, друзья! А вот и итоги дня:';
 
       this.telegramService.sendMessage(
-        `<b>${titleMessage}</b>\n\n${
+        `<b>${titleMessage}</b>\n\n<b>Сериалы:</b>\n${
           showsText || 'Сериалы сегодня никто не смотрел'
-        }\n\n ${newsText}`,
+        }\n\n<b>Новости дня</b>\n${newsText}`,
         chatId,
       );
     };
 
     const job = new CronJob(
-      '00 00 01 * * *',
+      '00 02 00 * * *',
       sendNightlyMessage,
       'Europe/Moscow',
     );

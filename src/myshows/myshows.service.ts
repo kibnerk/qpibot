@@ -4,11 +4,11 @@ import setCookie from 'set-cookie-parser';
 import md5 from 'md5';
 import { isYesterday } from 'date-fns';
 
-import api from '../scripts/api.js';
-import { NAME_BY_LOGIN, GENDERS } from '../scripts/constants.js';
-import { declOfNum } from '../scripts/helpers.js';
+import api from '../scripts/api';
+import { NAME_BY_LOGIN, GENDERS } from '../scripts/constants';
+import { declOfNum } from '../scripts/helpers';
 
-interface ShowProps {
+interface Show {
   name: string;
   episodes: number;
   gender: string;
@@ -18,7 +18,7 @@ interface ShowProps {
 
 @Injectable()
 export class MyshowsService {
-  getShowsTextList(shows: ShowProps[]) {
+  getShowsTextList(shows: Show[]) {
     const message = shows
       ?.map(
         ({ name, episodes, gender, showId, show }) =>
