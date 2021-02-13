@@ -25,8 +25,13 @@ export class AppModule {
     const chatId = process.env.TELEGRAM_CHAT_ID;
 
     const sendNightlyMessage = async () => {
+      const allShows = await this.myshowsService.getShowsWithAuth(
+        myshowsLogin,
+        myshowsPassword,
+      );
+
       await this.myshowsService
-        .getYesterdayShows(myshowsLogin, myshowsPassword)
+        .getYesterdayShows(allShows)
         .then((lastShows) => {
           shows = lastShows;
         });

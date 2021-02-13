@@ -34,9 +34,6 @@ export class MyshowsService {
     return message;
   }
 
-  getValueFromData = (title: string, data: { value: string; name: string }[]) =>
-    `${title}=` + data.find(({ name }) => name === title).value;
-
   getAuthData = (login: string, password: string) => {
     return axios
       .get(`${api.myshows}/login`, {
@@ -56,10 +53,15 @@ export class MyshowsService {
   };
 
   getLastShows = async (authData: []) => {
+    const getValueFromData = (
+      title: string,
+      data: { value: string; name: string }[],
+    ) => `${title}=` + data.find(({ name }) => name === title).value;
+
     return axios
       .get(`${api.myshows}/news/`, {
         headers: {
-          Cookie: `${this.getValueFromData('PHPSESSID', authData)}`,
+          Cookie: `${getValueFromData('PHPSESSID', authData)}`,
         },
       })
       .then((res) => {
@@ -77,14 +79,12 @@ export class MyshowsService {
     return null;
   };
 
-  getYesterdayShows = async (login: string, password: string) => {
-    const shows = await this.getShowsWithAuth(login, password);
-
+  getYesterdayShows = async (shows: Show[]) => {
     if (shows) {
       const days = Object.keys(shows);
-      const lastWatchDay = days.length && days[1];
+      const lastWatchDay = days.length && days[0];
 
-      if (isYesterday(new Date(lastWatchDay))) {
+      if (isYesterday(new Date(lastWatchDay.split('.').reverse().join('.')))) {
         const last = lastWatchDay && shows[lastWatchDay];
         let lastOnce = [];
 
