@@ -1,5 +1,8 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import axios from 'axios';
 import { TjService } from './tj.service';
+
+jest.mock('axios');
 
 const titleOfNews = ['Заголовок 1', 'Заголовок номер два'];
 
@@ -29,6 +32,8 @@ const jsonApiNews = [
   },
 ];
 
+const mockAxios = axios as jest.Mocked<typeof axios>;
+
 describe('TjService', () => {
   let service: TjService;
 
@@ -45,7 +50,19 @@ describe('TjService', () => {
   });
 
   it('check getLastNewsFromApi', async () => {
-    service.getLastNewsFromApi(5);
+    mockAxios.get.mockResolvedValue({
+      data: {
+        result: jsonApiNews,
+      },
+    });
+    const news = await service.getLastNewsFromApi(5);
+    expect(news).toBe(jsonApiNews);
+  });
+
+  it('check getLastNewsFromApi with error', async () => {
+    mockAxios.get.mockRejectedValue(new Error('Async error'));
+    const news = await service.getLastNewsFromApi(5);
+    expect(news).toStrictEqual([]);
   });
 
   it('check getNewsTextList method (json to string)', async () => {

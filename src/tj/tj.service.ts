@@ -42,7 +42,6 @@ export class TjService {
         return res.data.result;
       })
       .catch((e) => {
-        console.error(e);
         return [];
       });
   };
