@@ -19,7 +19,7 @@ export class TjService {
           url,
         };
       })
-      .filter(({ title }, index) => title && index <= count);
+      .filter(({ title }, index) => title && index < count);
   };
 
   getNewsTextList(news: NewsItemProps[]) {
