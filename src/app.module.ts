@@ -3,10 +3,11 @@ import { CronJob } from 'cron';
 import { TelegramService } from './telegram/telegram.service';
 import { MyshowsService } from './myshows/myshows.service';
 import { TjService } from './tj/tj.service';
+import { AppController } from './app.controller';
 
 @Module({
   imports: [],
-  controllers: [],
+  controllers: [AppController],
   providers: [TelegramService, MyshowsService, TjService],
 })
 export class AppModule {
