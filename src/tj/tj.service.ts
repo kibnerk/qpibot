@@ -1,16 +1,11 @@
-import { Injectable } from '@nestjs/common';
-import axios from 'axios';
-import api from '../scripts/api';
-
-interface NewsItemProps {
-  title: string;
-  cover?: { thumbnailUrl?: string };
-  url: string;
-}
+import { HttpService, Injectable } from '@nestjs/common';
+import { NewsDto, NewsItem } from './types';
 
 @Injectable()
 export class TjService {
-  getParsedNews = (news: NewsItemProps[], count: number) => {
+  constructor(private readonly httpService: HttpService) {}
+
+  public getParsedNews(news: NewsItem[], count: number) {
     return news
       .map(({ cover, title, url }) => {
         return {
@@ -20,9 +15,9 @@ export class TjService {
         };
       })
       .filter(({ title }, index) => title && index < count);
-  };
+  }
 
-  getNewsTextList(news: NewsItemProps[]) {
+  public getNewsTextList(news: NewsItem[]) {
     const message = news
       .map(
         ({ title, url }, index) =>
@@ -33,19 +28,15 @@ export class TjService {
     return message;
   }
 
-  getLastNewsFromApi = async (count: number) => {
-    return axios
-      .get(`${api.lastNews}`, {
+  public async getLastNewsFromApi(count: number) {
+    const res = await this.httpService
+      .get<NewsDto>(`/`, {
         params: {
           count,
         },
       })
-      .then((res) => {
-        return res.data.result;
-      })
-      .catch((e) => {
-        console.error(e);
-        return [];
-      });
-  };
+      .toPromise();
+
+    return res.data.result;
+  }
 }

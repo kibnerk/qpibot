@@ -1,24 +1,20 @@
-import { Injectable } from '@nestjs/common';
-import axios from 'axios';
+import { HttpService, Injectable } from '@nestjs/common';
 import setCookie from 'set-cookie-parser';
-import md5 from 'md5';
 import { isYesterday } from 'date-fns';
 
-import api from '../scripts/api';
+import { MyshowsConfig } from './myshows.config';
 import { NAME_BY_LOGIN, GENDERS } from '../scripts/constants';
 import { declOfNum } from '../scripts/helpers';
-
-interface Show {
-  name: string;
-  episodes: number;
-  gender: string;
-  showId: number;
-  show: string;
-}
+import { Show } from './types';
 
 @Injectable()
 export class MyshowsService {
-  getShowsTextList(shows: Show[]) {
+  constructor(
+    private readonly httpService: HttpService,
+    private readonly myshowsConfig: MyshowsConfig,
+  ) {}
+
+  public getShowsTextList(shows: Show[]) {
     const message = shows
       ?.map(
         ({ name, episodes, gender, showId, show }) =>
@@ -34,52 +30,29 @@ export class MyshowsService {
     return message;
   }
 
-  getAuthData = (login: string, password: string) => {
-    return axios
-      .get(`${api.myshows}/login`, {
-        params: {
-          login,
-          password: md5(password),
-        },
-      })
-      .then((res: any) => {
-        return setCookie.parse(res) as any;
-      })
-      .catch((error) => {
-        return {
-          error,
-        };
-      });
-  };
-
-  getLastShows = async (authData: []) => {
+  public async getLastShows(authData: setCookie.Cookie[]) {
     const getValueFromData = (
       title: string,
       data: { value: string; name: string }[],
     ) => `${title}=` + data.find(({ name }) => name === title).value;
 
-    return axios
-      .get(`${api.myshows}/news/`, {
+    const res = await this.httpService
+      .get(`/news/`, {
         headers: {
           Cookie: `${getValueFromData('PHPSESSID', authData)}`,
         },
       })
-      .then((res) => {
-        return res.data;
-      })
-      .catch((e) => {
-        console.error(e);
-        return null;
-      });
-  };
+      .toPromise();
 
-  getShowsWithAuth = async (login: string, password: string) => {
-    const authData = await this.getAuthData(login, password);
-    if (!authData.error) return this.getLastShows(authData);
-    return null;
-  };
+    return res.data;
+  }
 
-  getYesterdayShows = async (shows: Show[]) => {
+  public async getShowsWithAuth() {
+    const authData = await this.getAuthData();
+    return this.getLastShows(authData);
+  }
+
+  public async getYesterdayShows(shows: Show[]) {
     if (shows) {
       const days = Object.keys(shows);
       const lastWatchDay = days.length && days[0];
@@ -116,5 +89,18 @@ export class MyshowsService {
     }
 
     return null;
-  };
+  }
+
+  private async getAuthData() {
+    const res = await this.httpService
+      .get(`/login`, {
+        params: {
+          login: this.myshowsConfig.login,
+          password: this.myshowsConfig.password,
+        },
+      })
+      .toPromise();
+
+    return setCookie.parse(res as any);
+  }
 }
