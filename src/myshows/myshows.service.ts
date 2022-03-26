@@ -71,10 +71,10 @@ export class MyshowsService {
     if (!shows) return;
 
     const days = Object.keys(shows);
-    const lastWatchDay = days.length ? days[3] : null;
+    const lastWatchDay = days.length ? days[0] : null;
     const lastWatchDate = new Date(lastWatchDay.split('.').reverse().join('.'));
 
-    if (isYesterday(lastWatchDate)) return;
+    if (!isYesterday(lastWatchDate)) return;
 
     const lastDayEpisodes = lastWatchDay ? shows[lastWatchDay] : [];
     let showsUsersList: Show[] = [];
