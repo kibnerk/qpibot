@@ -4,7 +4,7 @@ export enum NAME_BY_LOGIN {
   ПафнутийТяпкинс = 'Пафнутий',
 }
 
-export enum GENDERS {
+export enum GENDER {
   FEMALE = 'f',
   MALE = 'm',
 }

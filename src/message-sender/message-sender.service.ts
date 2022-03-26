@@ -4,6 +4,8 @@ import { Cron } from '@nestjs/schedule';
 import { TelegramService } from '../telegram/telegram.service';
 import { MyshowsService } from '../myshows/myshows.service';
 import { TjService } from '../tj/tj.service';
+import { Show, TAllShows } from 'src/myshows/types';
+import { NewsItem } from 'src/tj/types';
 
 @Injectable()
 export class MessageSenderService {
@@ -20,14 +22,28 @@ export class MessageSenderService {
     this.telegramService.launch();
     const chatId = process.env.TELEGRAM_CHAT_ID;
 
-    const allShows = await this.myshowsService.getShowsWithAuth();
+    const showsPromise = this.myshowsService
+      .getShowsWithAuth()
+      .then((showsList: TAllShows) => {
+        return this.myshowsService.getYesterdayShows(showsList);
+      })
+      .then((groupedShows: Show[] | undefined) => {
+        return this.myshowsService.getShowsTextList(groupedShows);
+      });
 
-    const shows = await this.myshowsService.getYesterdayShows(allShows);
-    const showsText = this.myshowsService.getShowsTextList(shows);
+    const newsPromise = this.tjService
+      .getLastNewsFromApi(25)
+      .then((news: NewsItem[]) => {
+        return this.tjService.getParsedNews(news, 3);
+      })
+      .then((newsParsed: NewsItem[]) => {
+        return this.tjService.getNewsTextList(newsParsed);
+      });
 
-    const news = await this.tjService.getLastNewsFromApi(25);
-    const newsParsed = this.tjService.getParsedNews(news, 3);
-    const newsText = this.tjService.getNewsTextList(newsParsed);
+    const [showsText, newsText] = await Promise.all([
+      showsPromise,
+      newsPromise,
+    ]);
 
     const titleMessage = 'Доброй ночи, друзья! А вот и итоги дня:';
     const message = `<b>${titleMessage}</b>\n\n<b>Сериалы:</b>\n${

@@ -3,9 +3,25 @@ import setCookie from 'set-cookie-parser';
 import { isYesterday } from 'date-fns';
 
 import { MyshowsConfig } from './myshows.config';
-import { NAME_BY_LOGIN, GENDERS } from '../scripts/constants';
+import { NAME_BY_LOGIN, GENDER } from '../scripts/constants';
 import { declOfNum } from '../scripts/helpers';
-import { Show } from './types';
+import { Show, TAllShows } from './types';
+
+function getEpisodeTitle(episodes: number): string {
+  return `${episodes} ${declOfNum(episodes, [
+    'эпизод',
+    'эпизода',
+    'эпизодов',
+  ])}`;
+}
+
+function getWordByGender(gender: GENDER) {
+  return gender === GENDER.FEMALE ? 'посмотрела' : 'посмотрел';
+}
+
+function getName(login: string) {
+  return NAME_BY_LOGIN[login] || login;
+}
 
 @Injectable()
 export class MyshowsService {
@@ -14,19 +30,18 @@ export class MyshowsService {
     private readonly myshowsConfig: MyshowsConfig,
   ) {}
 
-  public getShowsTextList(shows: Show[]) {
+  public getShowsTextList(shows: Show[] | undefined) {
+    if (!shows) return;
+
     const message = shows
-      ?.map(
-        ({ name, episodes, gender, showId, show }) =>
-          `${name} ${
-            gender === GENDERS.FEMALE ? 'посмотрела' : 'посмотрел'
-          } ${episodes} ${declOfNum(episodes, [
-            'эпизод',
-            'эпизода',
-            'эпизодов',
-          ])} сериала <a href="https://myshows.me/view/${showId}">${show}</a>`,
+      .map(
+        ({ login, episodes, gender, showId, show }) =>
+          `${getName(login)} ${getWordByGender(gender)} ${getEpisodeTitle(
+            episodes,
+          )} сериала <a href="https://myshows.me/view/${showId}">${show}</a>`,
       )
       .join('\n');
+
     return message;
   }
 
@@ -52,43 +67,43 @@ export class MyshowsService {
     return this.getLastShows(authData);
   }
 
-  public async getYesterdayShows(shows: Show[]) {
-    if (shows) {
-      const days = Object.keys(shows);
-      const lastWatchDay = days.length && days[0];
+  public getYesterdayShows(shows: TAllShows): Show[] | undefined {
+    if (!shows) return;
 
-      if (isYesterday(new Date(lastWatchDay.split('.').reverse().join('.')))) {
-        const last = lastWatchDay && shows[lastWatchDay];
-        let lastOnce = [];
+    const days = Object.keys(shows);
+    const lastWatchDay = days.length ? days[3] : null;
+    const lastWatchDate = new Date(lastWatchDay.split('.').reverse().join('.'));
 
-        last.forEach((item) => {
-          const findItem = lastOnce.find(
-            (el) => el.login === item.login && el.showId === item.showId,
-          );
-          if (findItem) {
-            lastOnce = [
-              ...lastOnce.filter(
-                (el) => el.login !== item.login && el.showId !== item.showId,
-              ),
-              {
-                ...findItem,
-                episodes: item.episodes + findItem.episodes,
-              },
-            ];
-          } else {
-            lastOnce = [
-              ...lastOnce,
-              { ...item, name: NAME_BY_LOGIN[item.login] || item.login },
-            ];
-          }
+    if (isYesterday(lastWatchDate)) return;
+
+    const lastDayEpisodes = lastWatchDay ? shows[lastWatchDay] : [];
+    let showsUsersList: Show[] = [];
+
+    for (const episode of lastDayEpisodes) {
+      const { login, showId, episodes } = episode;
+
+      const checkShow = (show: Show) => {
+        return show.showId === showId && show.login === login;
+      };
+
+      const episodeInList = showsUsersList.find(checkShow);
+
+      if (episodeInList) {
+        const changedEpisode = {
+          ...episodeInList,
+          episodes: episodeInList.episodes + episodes,
+        };
+
+        showsUsersList = showsUsersList.map((show) => {
+          if (checkShow(show)) return changedEpisode;
+          return show;
         });
-        return lastOnce;
+      } else {
+        showsUsersList.push(episode);
       }
-
-      return [];
     }
 
-    return null;
+    return showsUsersList;
   }
 
   private async getAuthData() {
