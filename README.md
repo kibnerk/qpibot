@@ -5,15 +5,15 @@ QpiBot - telegram bot
 ## Installation
 
 ```bash
-$ yarn install
+$ npm install
 ```
 
 ## Running the app
 
 ```bash
 # development
-$ yarn start:dev
+$ npm run start:dev
 
 # production mode
-$ yarn start:prod
+$ npm run start:prod
 ```
