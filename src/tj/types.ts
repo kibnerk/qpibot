@@ -1,9 +1,20 @@
-export interface NewsItem {
+export type TNewsDataItem = {
   title: string;
   cover?: { thumbnailUrl?: string };
   url: string;
+};
+
+export interface NewsItem {
+  type: 'entry';
+  data: {
+    id: number;
+    title: string;
+    audioUrl: string;
+  };
 }
 
 export interface NewsDto {
-  result: NewsItem[];
+  result: {
+    items: NewsItem[];
+  };
 }

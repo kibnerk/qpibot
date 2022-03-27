@@ -5,7 +5,7 @@ import { TelegramService } from '../telegram/telegram.service';
 import { MyshowsService } from '../myshows/myshows.service';
 import { TjService } from '../tj/tj.service';
 import { Show, TAllShows } from 'src/myshows/types';
-import { NewsItem } from 'src/tj/types';
+import { NewsItem, TNewsDataItem } from 'src/tj/types';
 
 @Injectable()
 export class MessageSenderService {
@@ -36,7 +36,7 @@ export class MessageSenderService {
       .then((news: NewsItem[]) => {
         return this.tjService.getParsedNews(news, 3);
       })
-      .then((newsParsed: NewsItem[]) => {
+      .then((newsParsed: TNewsDataItem[]) => {
         return this.tjService.getNewsTextList(newsParsed);
       });
 

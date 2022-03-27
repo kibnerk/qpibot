@@ -95,8 +95,7 @@ export class MyshowsService {
         };
 
         showsUsersList = showsUsersList.map((show) => {
-          if (checkShow(show)) return changedEpisode;
-          return show;
+          return checkShow(show) ? changedEpisode : show;
         });
       } else {
         showsUsersList.push(episode);

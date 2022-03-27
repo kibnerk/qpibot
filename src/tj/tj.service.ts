@@ -1,5 +1,6 @@
 import { HttpService, Injectable } from '@nestjs/common';
-import { NewsDto, NewsItem } from './types';
+import { NEWS_URL } from 'src/scripts/api';
+import { NewsDto, NewsItem, TNewsDataItem } from './types';
 
 @Injectable()
 export class TjService {
@@ -7,17 +8,17 @@ export class TjService {
 
   public getParsedNews(news: NewsItem[], count: number) {
     return news
-      .map(({ cover, title, url }) => {
+      .map(({ data }) => {
+        const { title, id } = data;
         return {
-          image: cover ? cover.thumbnailUrl : '',
           title,
-          url,
+          url: `${NEWS_URL}/${id}`,
         };
       })
       .filter(({ title }, index) => title && index < count);
   }
 
-  public getNewsTextList(news: NewsItem[]) {
+  public getNewsTextList(news: TNewsDataItem[]) {
     const message = news
       .map(
         ({ title, url }, index) =>
@@ -37,6 +38,6 @@ export class TjService {
       })
       .toPromise();
 
-    return res.data.result;
+    return res.data.result.items;
   }
 }
