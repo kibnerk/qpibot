@@ -14,7 +14,7 @@ export class MessageSenderService {
     private readonly myshowsService: MyshowsService,
     private readonly tjService: TjService,
   ) {}
-  @Cron('00 02 00 * * *', {
+  @Cron('2 00 * * *', {
     name: 'nightlyMessage',
     timeZone: 'Europe/Moscow',
   })
