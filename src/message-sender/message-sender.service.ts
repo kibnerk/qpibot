@@ -13,13 +13,14 @@ export class MessageSenderService {
     private readonly telegramService: TelegramService,
     private readonly myshowsService: MyshowsService,
     private readonly tjService: TjService,
-  ) {}
+  ) {
+    this.telegramService.launch();
+  }
   @Cron('2 00 * * *', {
     name: 'nightlyMessage',
     timeZone: 'Europe/Moscow',
   })
   public async sendNightlyMessage() {
-    this.telegramService.launch();
     const chatId = process.env.TELEGRAM_CHAT_ID;
 
     const showsPromise = this.myshowsService
