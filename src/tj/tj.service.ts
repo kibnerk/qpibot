@@ -1,4 +1,5 @@
-import { HttpService, Injectable } from '@nestjs/common';
+import { HttpService } from '@nestjs/axios';
+import { Injectable } from '@nestjs/common';
 import { NEWS_URL } from 'src/scripts/api';
 import { NewsDto, NewsItem, TNewsDataItem } from './types';
 

@@ -1,4 +1,5 @@
-import { HttpService, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
+import { HttpService } from '@nestjs/axios';
 import setCookie from 'set-cookie-parser';
 import { isYesterday } from 'date-fns';
 

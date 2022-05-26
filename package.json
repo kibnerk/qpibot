@@ -21,11 +21,12 @@
     "test:e2e": "jest --config ./test/jest-e2e.json"
   },
   "dependencies": {
-    "@nestjs/common": "^8.4.3",
-    "@nestjs/config": "^2.0.0",
-    "@nestjs/core": "^8.4.3",
-    "@nestjs/platform-express": "^8.4.3",
-    "@nestjs/schedule": "^1.0.2",
+    "@nestjs/axios": "^0.0.8",
+    "@nestjs/common": "^8.4.5",
+    "@nestjs/config": "^2.0.1",
+    "@nestjs/core": "^8.4.5",
+    "@nestjs/platform-express": "^8.4.5",
+    "@nestjs/schedule": "^2.0.1",
     "axios": "^0.21.1",
     "cookie-parser": "^1.4.5",
     "cron": "^1.8.2",
@@ -34,7 +35,7 @@
     "md5": "^2.3.0",
     "reflect-metadata": "^0.1.13",
     "rimraf": "^3.0.2",
-    "rxjs": "^6.6.3",
+    "rxjs": "^7.5.5",
     "set-cookie-parser": "^2.4.6",
     "telegraf": "^4.0.2"
   },
