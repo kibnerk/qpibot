@@ -14,6 +14,10 @@ export class TelegramService {
     this.bot.launch();
   }
 
+  public stop(): void {
+    this.bot.stop();
+  }
+
   public sendMessage(message: string, chatId: string): void {
     this.bot.telegram.sendMessage(chatId, message, { parse_mode: 'HTML' });
   }

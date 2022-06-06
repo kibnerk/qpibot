@@ -13,16 +13,14 @@ export class MessageSenderService {
     private readonly telegramService: TelegramService,
     private readonly myshowsService: MyshowsService,
     private readonly tjService: TjService,
-  ) {
-    this.telegramService.launch();
-  }
+  ) {}
   @Cron('2 00 * * *', {
     name: 'nightlyMessage',
     timeZone: 'Europe/Moscow',
   })
   public async sendNightlyMessage() {
     const chatId = process.env.TELEGRAM_CHAT_ID;
-
+    this.telegramService.launch();
     const showsPromise = this.myshowsService
       .getShowsWithAuth()
       .then((showsList: TAllShows) => {
@@ -49,8 +47,9 @@ export class MessageSenderService {
     const titleMessage = 'Доброй ночи, друзья! А вот и итоги дня:';
     const message = `<b>${titleMessage}</b>\n\n<b>Сериалы:</b>\n${
       showsText || 'Сериалы сегодня никто не смотрел'
-    }\n\n<b>Новости дня</b>\n${newsText}`;
+    }\n\n<b>Бизнес-новости дня:</b>\n${newsText}\n\nНа этом всё, спокойной ночи!`;
 
     this.telegramService.sendMessage(message, chatId);
+    this.telegramService.stop();
   }
 }

@@ -1,6 +1,13 @@
-const NEWS_SUBSITE_ID = 245416;
-const NEWS_CATEGORY_NAME = 'news';
-export const NEWS_URL = `https://tjournal.ru/${NEWS_CATEGORY_NAME}`;
+const SUBSITE_ID = {
+  TECH: 199117,
+  OFFLINE: 199132,
+  MEDIA: 199130,
+  HR: 199121,
+  SOCIAL: 199129,
+  MARKETING: 199113,
+};
+const subsitesIds = Object.values(SUBSITE_ID).join(',');
+export const NEWS_URL = `https://vc.ru`;
 
 export enum API_NAME {
   TJ = 'tj',
@@ -10,7 +17,7 @@ export enum API_NAME {
 export const apiLink = new Map([
   [
     API_NAME.TJ,
-    `https://api.tjournal.ru/v2.1/timeline?allSite=false&sorting=hotness&subsitesIds=${NEWS_SUBSITE_ID}`,
+    `https://api.vc.ru/v2.1/timeline?allSite=false&sorting=hotness&subsitesIds=${subsitesIds}`,
   ],
   [API_NAME.MY_SHOWS, 'http://api.myshows.me/profile'],
 ]);
